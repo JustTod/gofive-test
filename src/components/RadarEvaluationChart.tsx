@@ -13,11 +13,11 @@ import {
 } from 'recharts';
 
 const data = [
-  { criterion: 'Overall', self: 90, manager: 85 },
-  { criterion: 'Teamwork', self: 80, manager: 78 },
-  { criterion: 'Ownership', self: 95, manager: 92 },
-  { criterion: 'Innovation', self: 85, manager: 88 },
-  { criterion: 'Communication', self: 88, manager: 90 },
+  { criterion: 'ผลการทำงาน', self: 90, manager: 85 },
+  { criterion: 'ความสามารถ', self: 80, manager: 78 },
+  { criterion: 'การทำงานร่วมกับผู้อื่น', self: 95, manager: 92 },
+  { criterion: 'ความคิดสร้างสรรค์', self: 85, manager: 88 },
+  { criterion: 'การสื่อสาร', self: 88, manager: 90 },
 ].map((item) => ({
   ...item,
   average: Math.round((item.self + item.manager) / 2),
@@ -57,7 +57,7 @@ export default function RadarEvaluationChart() {
             checked={showAverage}
             onChange={(e) => setShowAverage(e.target.checked)}
           />
-          <span>Average</span>
+          <span>Team Average</span>
         </label>
       </div>
 
