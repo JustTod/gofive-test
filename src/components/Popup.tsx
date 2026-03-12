@@ -38,6 +38,8 @@ export default function Popup() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [salary, setSalary] = useState<string>('50,000');
   const [bonus, setBonus] = useState<string>('');
+  const [isNewSalary, setIsNewSalary] = useState(true);
+  const [isPromote, setIsPromote] = useState(false);
   const isOverview = activeTab === 'overview';
 
   const formatNumber = (val: string) => {
@@ -50,10 +52,12 @@ export default function Popup() {
   };
 
   const bonusTotal = useMemo(() => {
-    const s = getNumericValue(salary);
+    const currentSalary = 50000;
+    const newSalary = getNumericValue(salary);
+    const s = isNewSalary ? newSalary : currentSalary;
     const b = parseFloat(bonus) || 0;
     return (s * b).toLocaleString('en-US');
-  }, [salary, bonus]);
+  }, [salary, bonus, isNewSalary]);
 
   return (
     <>
@@ -61,7 +65,7 @@ export default function Popup() {
         onClick={() => setIsOpen(true)}
         className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium shadow-md"
       >
-        Open Evaluation Popup
+        See Evaluation Detail
       </button>
 
       {isOpen && (
@@ -332,27 +336,70 @@ export default function Popup() {
                               </div>
 
                               {parseFloat(bonus) > 0 && (
-                                <div className="px-4 py-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
-                                  <span className="text-xs text-emerald-700 font-medium">{bonus} months calculation</span>
-                                  <span className="text-sm font-bold text-emerald-600">{bonusTotal} THB</span>
+                                <div className="flex flex-col gap-3 p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/60">
+                                  <div className="flex items-center gap-4">
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                      <div className="relative flex items-center justify-center">
+                                        <input 
+                                          type="radio" 
+                                          name="salarySource" 
+                                          checked={!isNewSalary} 
+                                          onChange={() => setIsNewSalary(false)}
+                                          className="peer appearance-none w-4 h-4 border-2 border-slate-200 rounded-full checked:border-emerald-500 transition-all cursor-pointer"
+                                        />
+                                        <div className="absolute w-2 h-2 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-all" />
+                                      </div>
+                                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider group-hover:text-slate-700 transition-colors">Current Salary</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                      <div className="relative flex items-center justify-center">
+                                        <input 
+                                          type="radio" 
+                                          name="salarySource" 
+                                          checked={isNewSalary} 
+                                          onChange={() => setIsNewSalary(true)}
+                                          className="peer appearance-none w-4 h-4 border-2 border-slate-200 rounded-full checked:border-emerald-500 transition-all cursor-pointer"
+                                        />
+                                        <div className="absolute w-2 h-2 rounded-full bg-emerald-500 opacity-0 peer-checked:opacity-100 transition-all" />
+                                      </div>
+                                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider group-hover:text-slate-700 transition-colors">New Salary</span>
+                                    </label>
+                                  </div>
+                                  <div className="h-px bg-emerald-100 w-full" />
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-emerald-700 font-medium">{bonus} months calculation</span>
+                                    <span className="text-sm font-bold text-emerald-600">{bonusTotal} THB</span>
+                                  </div>
                                 </div>
                               )}
 
-                              <div className="flex flex-col gap-2">
+                              <div className="flex flex-col gap-3">
+                                <label className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all group">
+                                  <div className="relative flex items-center justify-center">
+                                    <input 
+                                      type="checkbox" 
+                                      checked={isPromote} 
+                                      onChange={() => setIsPromote(!isPromote)}
+                                      className="peer appearance-none w-5 h-5 border-2 border-slate-200 rounded-lg checked:bg-orange-500 checked:border-orange-500 transition-all cursor-pointer"
+                                    />
+                                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-all pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-slate-700 group-hover:text-orange-600 transition-colors">Promote this employee</span>
+                                    <span className="text-[10px] text-slate-500 font-medium">Flag for career advancement review</span>
+                                  </div>
+                                </label>
+
                                 <button 
-                                  className="w-full bg-orange-500 text-white py-2.5 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2" 
+                                  className="w-full bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2" 
                                   onClick={() => setIsConfirmModalOpen(true)}
                                 >
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                   </svg>
                                   Submit Adjustment
-                                </button>
-                                <button className="w-full bg-white border border-slate-200 text-slate-700 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2" onClick={() => setIsConfirmModalOpen(true)}>
-                                  <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                  </svg>
-                                  Promotion
                                 </button>
                               </div>
                             </div>
@@ -394,14 +441,23 @@ export default function Popup() {
                 Are you sure you want to apply this salary adjustment? This action will be recorded in the system.
               </p>
 
-              <div className="w-full bg-slate-50 rounded-2xl p-5 mb-8 border border-slate-100">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-medium text-slate-400 uppercase tracking-widest">New Salary</span>
+              <div className="w-full bg-slate-50 rounded-2xl p-5 mb-8 border border-slate-100 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">New Salary</span>
                   <span className="text-sm font-bold text-slate-700">{salary} THB</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-medium text-slate-400 uppercase tracking-widest">Calculated Bonus</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Calculated Bonus</span>
                   <span className="text-sm font-bold text-emerald-600">+{bonusTotal} THB</span>
+                </div>
+                <div className="h-px bg-slate-200/60 w-full" />
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Promotion Status</span>
+                  {isPromote ? (
+                    <span className="text-[10px] font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full uppercase tracking-wider">Yes, Promote</span>
+                  ) : (
+                    <span className="text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full uppercase tracking-wider">No Promotion</span>
+                  )}
                 </div>
               </div>
 
@@ -417,7 +473,7 @@ export default function Popup() {
                 </button>
                 <button 
                   onClick={() => setIsConfirmModalOpen(false)}
-                  className="w-full bg-white text-slate-500 py-3 rounded-2xl font-semibold hover:bg-slate-50 transition-all"
+                  className="w-full bg-white text-slate-500 py-3 rounded-2xl font-semibold hover:bg-slate-50 transition-all border border-slate-100"
                 >
                   Keep Editing
                 </button>
